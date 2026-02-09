@@ -388,7 +388,6 @@ python manage.py migrate
 - OTP-based password recovery
 - Environment variables for sensitive data (SECRET_KEY, database credentials, email passwords)
 - See [SECURITY.md](SECURITY.md) for complete security guidelines and best practices
-- OTP-based password recovery
 
 ---
 
