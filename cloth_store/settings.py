@@ -17,17 +17,19 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dfm=ehwqm*e+$^s&1)nkwyke@t%02uzs#0ph)-fj82_k8t#9k!'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dfm=ehwqm*e+$^s&1)nkwyke@t%02uzs#0ph)-fj82_k8t#9k!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 
 # Application definition
@@ -57,8 +59,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'cloth_store.urls'
 
-import os
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -83,12 +83,12 @@ WSGI_APPLICATION = 'cloth_store.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cloth_store_db',
-        'USER': 'clothuser',
-        'PASSWORD': 'Cloth@123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.mysql'),
+        'NAME': os.getenv('DB_NAME', 'cloth_store_db'),
+        'USER': os.getenv('DB_USER', 'clothuser'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Cloth@123'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
@@ -129,7 +129,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'  # <--- MUST HAVE LEADING SLASH
 
-import os
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # <--- MUST BE PRESENT
 ]
@@ -139,22 +138,17 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# Email Configuration
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-import os
-
+# Media files configuration
 # Base url to serve media files
 MEDIA_URL = '/media/'
 
