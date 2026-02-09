@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment | MarsClothStore</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* --- Page Layout --- */
+        body {
+            /* Luxury Background */
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* --- Glass Payment Card --- */
+        .payment-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* Gold Top Border Accent */
+        .payment-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-family: var(--font-head);
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        .order-ref {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        /* --- Price Display --- */
+        .price-box {
+            margin-bottom: 30px;
+        }
+        .price-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; display: block; }
+        .price-amount { font-family: var(--font-head); font-size: 2.5rem; color: var(--accent); }
+
+        /* --- QR Code Section --- */
+        .qr-frame {
+            background: #fff;
+            padding: 15px;
+            display: inline-block;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            position: relative;
+        }
+        
+        .qr-frame img { display: block; width: 180px; height: 180px; }
+
+        .scan-text {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: #000;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Form Styling (Matches Login) --- */
+        form { display: flex; flex-direction: column; gap: 20px; }
+
+        input {
+            width: 100%;
+            padding: 15px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            text-align: center;
+            transition: 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+        /* --- Action Button --- */
+        .btn-pay {
+            margin-top: 10px;
+            padding: 15px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-pay:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .cancel-link {
+            display: block;
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: #666;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .cancel-link:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="payment-card">
+        <h1>Secure Payment</h1>
+        <p class="order-ref">Order Reference #{{ order.id }}</p>
+
+        <div class="price-box">
+            <span class="price-label">Total Amount</span>
+            <span class="price-amount">₹{{ order.total_amount }}</span>
+        </div>
+
+        <div class="qr-frame">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mars.slc@slc&pn=MarsStore&am={{ order.total_amount }}" alt="Scan to Pay">
+            <span class="scan-text">Scan with any UPI App</span>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="utr" placeholder="Enter UTR / Transaction ID" required autocomplete="off">
+            <button type="submit" class="btn-pay">Verify Payment</button>
+        </form>
+
+        <a href="{% url 'my_orders' %}" class="cancel-link">Pay Later / Return to Orders</a>
+    </div>
+
+</body>
+</html>

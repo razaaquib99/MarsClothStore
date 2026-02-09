@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Bag | MarsClothStore</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            /* Consistent Luxury Background */
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* --- Glass Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 40px;
+        }
+
+        .navbar h2 {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .navbar span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px 20px 60px; }
+
+        /* Cart Container (Glass Effect) */
+        .cart-wrapper {
+            background: rgba(255, 255, 255, 0.05); /* Glass var */
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Elegant Table Styling */
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            text-align: left;
+            padding: 20px 30px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent); /* Gold Headers */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+        }
+
+        td {
+            padding: 25px 30px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ddd;
+        }
+
+        .product-name {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .product-cat {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Remove Button */
+        .btn-remove {
+            color: #ff5f5f;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            opacity: 0.6;
+        }
+        .btn-remove:hover { opacity: 1; text-decoration: underline; }
+
+        /* Cart Footer (Total & Checkout) */
+        .cart-footer {
+            padding: 40px 30px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-display {
+            text-align: right;
+        }
+        
+        .total-label { font-size: 0.9rem; color: #aaa; margin-right: 15px; text-transform: uppercase; }
+        .total-amount { font-family: var(--font-head); font-size: 2rem; color: var(--accent); }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 100px 20px; }
+        .empty-state h2 { font-family: var(--font-head); color: #fff; margin-bottom: 15px; }
+        .empty-state p { color: #888; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2><span>Mars</span>Cloth<span>Store</span></h2>
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'shop' %}">Shop</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <a href="{% url 'view_cart' %}" class="active">Bag</a>
+            <a href="{% url 'logout' %}">Sign Out</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="section-title">
+            <h2>Your Selection</h2>
+            <p>Review your items before checkout.</p>
+        </div>
+
+        <div class="cart-wrapper">
+            {% if cart_items %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th style="text-align: right;">Total</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <div class="product-name">{{ item.product.name }}</div>
+                                <div class="product-cat">{{ item.product.category }}</div>
+                            </td>
+                            <td>₹{{ item.product.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td style="text-align: right; font-weight: bold; color: #fff;">₹{{ item.total_price }}</td>
+                            <td style="text-align: center;">
+                                <a href="{% url 'remove_from_cart' item.id %}" class="btn-remove">Remove</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="cart-footer">
+                    <a href="{% url 'shop' %}" style="color: #aaa; border-bottom: 1px solid #aaa; padding-bottom: 2px;">
+                        ← Continue Shopping
+                    </a>
+                    
+                    <div class="total-display">
+                        <div style="margin-bottom: 20px;">
+                            <span class="total-label">Subtotal</span> 
+                            <span class="total-amount">₹{{ total_price }}</span>
+                        </div>
+                        
+                        <a href="{% url 'checkout' %}" class="btn btn-gold">
+                            Proceed to Checkout
+                        </a>
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="empty-state">
+                    <h2>Your Bag is Empty</h2>
+                    <p>It looks like you haven't made your choice yet.</p>
+                    <a href="{% url 'shop' %}" class="btn btn-outline">Browse Collection</a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</body>
+</html>

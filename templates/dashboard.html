@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | MarsClothStore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Global Theme --- */
+        :root {
+            --glass-bg: rgba(0, 0, 0, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --accent: #d4af37;
+            --font-head: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-main);
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)),
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* --- Glass Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar h2 {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .navbar span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2><span>Mars</span>Cloth<span>Store</span></h2>
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}" class="active">Dashboard</a>
+            <a href="{% url 'shop' %}">Shop</a>
+            <a href="{% url 'my_orders' %}">Orders</a>
+            <a href="{% url 'view_cart' %}">Bag</a>
+            <a href="{% url 'logout' %}">Sign Out</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-text">
+            <p>Welcome Back</p>
+            <h1>{{ request.user.first_name|default:request.user.email }}</h1>
+            <p style="font-size: 0.8rem; opacity: 0.8;">Curated Selections • 2026 Collection</p>
+        </div>
+    </section>
+
+    <style>
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .hero h1 {
+            font-family: var(--font-head);
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            font-weight: 400;
+            line-height: 1.2;
+            text-transform: capitalize;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+    <div class="container">
+        <div class="dashboard-grid">
+            
+            <a href="{% url 'shop_category' 'Men' %}" class="dashboard-card">
+                <h3>Men</h3>
+                <p>Tailored Excellence</p>
+            </a>
+
+            <a href="{% url 'shop_category' 'Women' %}" class="dashboard-card">
+                <h3>Women</h3>
+                <p>Modern Elegance</p>
+            </a>
+
+            <a href="{% url 'shop_category' 'Accessories' %}" class="dashboard-card">
+                <h3>Accessories</h3>
+                <p>The Finishing Touch</p>
+            </a>
+
+            <a href="{% url 'shop' %}" class="dashboard-card" style="border-color: var(--accent);">
+                <h3>Shop All</h3>
+                <p>View Full Collection</p>
+            </a>
+            
+        </div>
+    </div>
+
+    <style>
+        /* --- Container & Grid --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: 0.4s ease;
+            min-height: 300px;
+            text-decoration: none;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .dashboard-card h3 {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #fff;
+            font-style: italic;
+        }
+
+        .dashboard-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+
+    <div class="cta">
+        <h2>Curated for You</h2>
+        <p>Your personal stylist is just a click away.</p>
+        <button onclick="window.location.href='{% url "shop" %}'">Browse New Arrivals</button>
+    </div>
+
+    <style>
+        /* --- CTA Section --- */
+        .cta {
+            text-align: center;
+            padding: 80px 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cta h2 {
+            font-family: var(--font-head);
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .cta p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        button {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 14px 40px;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.4s ease;
+            border-radius: 2px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+    </style>
+
+</body>
+</html>

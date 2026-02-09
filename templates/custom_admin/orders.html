@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders | Admin Panel</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* --- Admin Layout --- */
+        body {
+            /* Luxury Background */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* --- Admin Glass Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 40px;
+        }
+
+        .navbar h2 {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .navbar span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 40px; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 { font-family: var(--font-head); color: var(--accent); margin: 0; font-size: 2.5rem; }
+
+        .admin-badge { 
+            background: #fff; color: #000; padding: 4px 10px; 
+            border-radius: 4px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; 
+            vertical-align: middle; margin-left: 10px;
+        }
+
+        /* --- Glass Table --- */
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+
+        th {
+            text-align: left;
+            padding: 20px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ddd;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        /* --- Column Specific Styles --- */
+        .user-meta div { font-weight: 500; color: #fff; margin-bottom: 3px; }
+        .user-meta span { color: #888; font-size: 0.8rem; }
+
+        .item-list { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: #ccc; }
+        .item-list li { margin-bottom: 4px; }
+
+        .utr-tag {
+            font-family: monospace;
+            background: #000;
+            color: #00cec9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* --- Status Badges --- */
+        .badge { padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: inline-block; }
+        .st-Pending { color: #fdcb6e; background: rgba(253, 203, 110, 0.1); border: 1px solid rgba(253, 203, 110, 0.2); }
+        .st-Payment_Submitted { color: #74b9ff; background: rgba(116, 185, 255, 0.1); border: 1px solid rgba(116, 185, 255, 0.2); }
+        .st-Paid { color: #55efc4; background: rgba(85, 239, 196, 0.1); border: 1px solid rgba(85, 239, 196, 0.2); }
+        .st-Dispatched { color: #a29bfe; background: rgba(162, 155, 254, 0.1); border: 1px solid rgba(162, 155, 254, 0.2); }
+        .st-Delivered { color: var(--accent); background: rgba(212, 175, 55, 0.1); border: 1px solid var(--accent); }
+
+        /* --- Update Form --- */
+        .status-form { display: flex; gap: 8px; align-items: center; }
+        
+        select {
+            background: #111;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        .btn-update {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            transition: 0.3s;
+        }
+        .btn-update:hover { background: var(--accent); color: #000; }
+
+        /* Navbar Active State */
+        .nav-links a.active { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div style="display: flex; align-items: center;">
+            <h2><span>Mars</span>Admin</h2>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'admin_dashboard' %}">Products</a>
+            <a href="{% url 'admin_users' %}">Users</a>
+            <a href="{% url 'admin_orders' %}" class="active">Orders</a>
+            <a href="{% url 'edit_admin_profile' %}">Profile</a>
+            <a href="{% url 'logout' %}" style="color: #aaa; margin-left: 20px;">Logout</a>
+            <a href="{% url 'shop' %}" style="border: 1px solid #444; padding: 5px 15px; border-radius: 20px; margin-left: 15px; font-size: 0.75rem;">View Site ↗</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Manage Orders</h1>
+            </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total & UTR</th>
+                        <th>Current Status</th>
+                        <th>Update Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>
+                            <strong style="color: #fff;">#{{ order.id }}</strong><br>
+                            <span style="font-size: 0.8rem; color: #666;">{{ order.created_at|date:"M d" }}</span>
+                        </td>
+
+                        <td class="user-meta">
+                            <div>{{ order.user.first_name }} {{ order.user.last_name }}</div>
+                            <span>{{ order.user.email }}</span>
+                        </td>
+
+                        <td>
+                            <ul class="item-list">
+                                {% for item in order.items.all %}
+                                    <li>{{ item.quantity }} x {{ item.product.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+
+                        <td>
+                            <div style="font-weight: bold; color: var(--accent); margin-bottom: 4px;">₹{{ order.total_amount }}</div>
+                            {% if order.utr_number %}
+                                <span class="utr-tag">{{ order.utr_number }}</span>
+                            {% else %}
+                                <span style="font-size: 0.8rem; color: #555;">-- Pending --</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="badge st-{{ order.status }}">{{ order.get_status_display }}</span>
+                        </td>
+
+                        <td>
+                            <form action="{% url 'update_order_status' order.id %}" method="POST" class="status-form">
+                                {% csrf_token %}
+                                <select name="status">
+                                    <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Payment_Submitted" {% if order.status == 'Payment_Submitted' %}selected{% endif %}>Payment Submitted</option>
+                                    <option value="Paid" {% if order.status == 'Paid' %}selected{% endif %}>Paid</option>
+                                    <option value="Dispatched" {% if order.status == 'Dispatched' %}selected{% endif %}>Dispatched</option>
+                                    <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                </select>
+                                <button type="submit" class="btn-update">Set</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 60px; color: #666;">
+                                No orders have been placed yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>

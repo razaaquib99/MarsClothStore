@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} | MarsClothStore</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* --- Page Layout --- */
+        body {
+            /* Consistent Luxury Background */
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* --- Glass Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar h2 {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .navbar span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+        }
+
+        /* --- Header Section --- */
+        .header-section {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .header-section h1 {
+            font-family: var(--font-head);
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-transform: capitalize;
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        /* --- Product Grid --- */
+        .container { padding: 0 8% 80px; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        /* --- Glass Product Card --- */
+        .product-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border-color: rgba(212, 175, 55, 0.4); /* Gold Border on Hover */
+        }
+
+        .image-box {
+            width: 100%;
+            height: 400px; /* Tall, editorial look */
+            overflow: hidden;
+            position: relative;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .product-card:hover .image-box img { transform: scale(1.05); }
+
+        .info-box {
+            padding: 25px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .category-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .name {
+            font-family: var(--font-head);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .price {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 20px;
+            font-family: var(--font-body);
+        }
+
+        /* --- Add to Cart Button --- */
+        .btn-add {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            margin-top: auto;
+        }
+
+        .btn-add:hover {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        /* --- Empty State --- */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px;
+            border: 1px dashed rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2><span>Mars</span>Cloth<span>Store</span></h2>
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'shop_category' 'Men' %}" {% if page_title == 'Men' %}class="active"{% endif %}>Men</a>
+            <a href="{% url 'shop_category' 'Women' %}" {% if page_title == 'Women' %}class="active"{% endif %}>Women</a>
+            <a href="{% url 'shop_category' 'Accessories' %}" {% if page_title == 'Accessories' %}class="active"{% endif %}>Accessories</a>
+            
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <a href="{% url 'view_cart' %}">Bag</a>
+            <a href="{% url 'logout' %}">Sign Out</a>
+        </div>
+    </nav>
+
+    <div class="header-section">
+        <h1>{{ page_title }}</h1>
+        <p>Exclusive 2026 Collection</p>
+    </div>
+
+    <div class="container">
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <div class="image-box">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div style="height:100%; display:flex; align-items:center; justify-content:center; color: #555;">
+                                No Image
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="info-box">
+                        <div>
+                            <div class="category-tag">{{ product.category }}</div>
+                            <h3 class="name">{{ product.name }}</h3>
+                            <div class="price">₹{{ product.price }}</div>
+                        </div>
+                        
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn-add">Add to Bag</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <h3>Coming Soon</h3>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        We are currently curating the {{ page_title }} collection.
+                    </p>
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin_dashboard' %}" style="color: var(--accent); display: block; margin-top: 15px;">+ Add Products (Admin)</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Inventory | Admin Panel</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* --- Admin Layout --- */
+        body {
+            /* Luxury Background */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* --- Admin Glass Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 40px;
+        }
+
+        .navbar h2 {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .navbar span { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 40px; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 { font-family: var(--font-head); color: var(--accent); margin: 0; font-size: 2.5rem; }
+        
+        .admin-badge { 
+            background: #fff; color: #000; padding: 4px 10px; 
+            border-radius: 4px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; 
+            vertical-align: middle; margin-left: 10px;
+        }
+
+        /* --- Glass Table --- */
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+
+        th {
+            text-align: left;
+            padding: 20px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ddd;
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+        /* Image Thumbnail */
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background: #000;
+        }
+
+        /* Category Tag */
+        .cat-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        /* Action Buttons */
+        .action-group { display: flex; gap: 10px; }
+        
+        .btn-edit {
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid rgba(116, 185, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+        .btn-edit:hover { background: rgba(116, 185, 255, 0.1); border-color: #74b9ff; }
+
+        .btn-delete {
+            color: #ff7675;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 118, 117, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+        .btn-delete:hover { background: rgba(255, 118, 117, 0.1); border-color: #ff7675; }
+
+        /* Highlight Active Nav */
+        .nav-links a.active { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div style="display: flex; align-items: center;">
+            <h2><span>Mars</span>Admin</h2>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'admin_dashboard' %}" class="active">Products</a>
+            <a href="{% url 'admin_users' %}">Users</a>
+            <a href="{% url 'admin_orders' %}">Orders</a>
+            <a href="{% url 'edit_admin_profile' %}">Profile</a>
+            <a href="{% url 'logout' %}" style="color: #aaa; margin-left: 20px;">Logout</a>
+            <a href="{% url 'shop' %}" style="border: 1px solid #444; padding: 5px 15px; border-radius: 20px; margin-left: 15px; font-size: 0.75rem;">View Site ↗</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Product Inventory</h1>
+            <a href="{% url 'add_product' %}" class="btn btn-gold">
+                + Add New Product
+            </a>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Image</th>
+                        <th>Product Details</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td>
+                            {% if p.image %}
+                                <img src="{{ p.image.url }}" alt="Img" class="product-thumb">
+                            {% else %}
+                                <div class="product-thumb" style="display: flex; align-items: center; justify-content: center; color: #444; font-size: 0.7rem;">No Img</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong style="color: #fff; font-size: 1rem;">{{ p.name }}</strong>
+                            </td>
+                        <td>
+                            <span class="cat-tag">{{ p.category }}</span>
+                        </td>
+                        <td style="color: var(--accent); font-weight: 500;">₹{{ p.price }}</td>
+                        <td>
+                            <div class="action-group">
+                                <a href="{% url 'edit_product' p.id %}" class="btn-edit">Edit</a>
+                                <a href="{% url 'delete_product' p.id %}" class="btn-delete" onclick="return confirm('Permanently delete {{ p.name }}?')">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px; color: #666;">
+                            No products in inventory.<br>
+                            <a href="{% url 'add_product' %}" style="color: var(--accent); margin-top: 10px; display: inline-block;">Add your first product</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>
