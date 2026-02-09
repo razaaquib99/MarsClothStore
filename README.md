@@ -178,19 +178,34 @@ cloth_store/
 ## ⚙️ Configuration
 
 ### Environment Variables (.env)
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory based on `.env.example`:
+
 ```env
+# Django Configuration
 DEBUG=True
 SECRET_KEY=your-secret-key-here
 ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database Configuration
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=cloth_store_db
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_HOST=localhost
+DB_PORT=3306
+
+# Email Configuration
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
+EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 ```
 
+**Important:** Never commit the `.env` file to version control. Use `.env.example` as a template. See [SECURITY.md](SECURITY.md) for detailed security guidelines.
+
 ### Settings (cloth_store/settings.py)
-- Database configured for SQLite by default
+- Database configured for MySQL (configurable via environment variables)
 - Static files configuration for CSS and JavaScript
 - Media files for product images
 - Email backend for OTP and password recovery
@@ -370,6 +385,9 @@ python manage.py migrate
 - Login required decorators on protected views
 - Admin-only access to management features
 - Password hashing with Django's default system
+- OTP-based password recovery
+- Environment variables for sensitive data (SECRET_KEY, database credentials, email passwords)
+- See [SECURITY.md](SECURITY.md) for complete security guidelines and best practices
 - OTP-based password recovery
 
 ---
