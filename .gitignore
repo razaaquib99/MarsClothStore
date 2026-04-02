@@ -16,3 +16,4 @@ staticfiles/
 # Virtual env
 venv/
 env/
+.vercel

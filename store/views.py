@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import Product, Cart, Order, OrderItem
 from .forms import ProductForm 
-
+import pyttsx3 as pt
 # --- Public Views ---
 
 def shop_view(request, category_name=None):
@@ -29,12 +29,15 @@ def add_to_cart(request, product_id):
     if not created:
         cart_item.quantity += 1
         cart_item.save()
+     # 🔊 Call speak function here
+    speak(f"{product.name} added to cart successfully")
     return redirect('view_cart')
 
 @login_required
 def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(Cart, id=item_id, user=request.user)
     cart_item.delete()
+    speak(f"{cart_item.product.name} removed from cart successfully")
     return redirect('view_cart')
 
 @login_required
@@ -169,3 +172,10 @@ def edit_admin_profile(request):
         'button_text': 'Save Changes',
         'form': form
     })
+
+def speak(text):
+    engine = pt.init()
+    engine.setProperty('rate', 120)  # Speed of speech
+    # engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
+    engine.say(text)
+    engine.runAndWait()

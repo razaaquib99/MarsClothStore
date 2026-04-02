@@ -4,9 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.mail import send_mail
-
+import pyttsx3 as pt
 from .models import EmailOTP
 import random
+from store.views import speak
 
 
 def generate_otp():
@@ -99,10 +100,11 @@ def login_view(request):
         otp = generate_otp()
         EmailOTP.objects.create(user=user, otp=otp)
         send_otp(email, otp)
+        speak(f"An OTP has been sent to your email for login verification")
 
         request.session["otp_user"] = user.id
         return redirect("verify_otp")
-
+    
     return render(request, "login.html")
 
 

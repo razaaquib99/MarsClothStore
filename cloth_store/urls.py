@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from store.views import admin_dashboard  # Import custom admin view
+from django.views.generic import RedirectView
 
 urlpatterns = [
     # 1. Django's built-in Admin (Moved to a secret path)
@@ -16,6 +17,9 @@ urlpatterns = [
 
     # 4. Store App (Shop, Cart, Orders, Admin Actions)
     path('store/', include('store.urls')),
+
+    # 5. Redirect root to shop
+    path('', RedirectView.as_view(pattern_name='shop', permanent=False)),
 ]
 
 # Serve media files (Images) during development
